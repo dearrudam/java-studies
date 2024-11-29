@@ -1,0 +1,37 @@
+= Programação Orientada a Objetos (POO) na Prática com Java
+:toc:
+
+== Introdução
+
+A Programação Orientada a Objetos é uma abordagem poderosa que facilita a organização e manutenção de código em projetos de software.
+
+
+== O que é Programação Orientada a Objetos (POO) ou Oriented-Object Programming(OOP)?
+
+A POO é um modelo de programação que organiza o código em torno de "objetos" – que representam coisas do mundo real ou entidades conceituais. Cada objeto combina:
+
+- **Estado**: Atributos que descrevem o objeto.
+- **Comportamento**: Métodos que definem o que o objeto pode fazer.
+
+Isso permite modelar problemas do mundo real de forma mais intuitiva e modular.
+
+
+== Pilares da OOP
+
+=== Encapsulamento
+
+É a técnica que permite ocultar detalhes de implementação de um objeto e expor apenas o que é necessário para o uso externo.
+
+== Abstração
+
+É a capacidade de representar/modelar problemas do real em forma de objetos.
+
+== Herança
+
+Herança permite que uma classe reutilize os atributos e métodos de outra classe. Isso promove a reutilização de código.
+
+== Polimorfismo
+
+É a capacidade de um objeto se comportar de várias formas. Polimorfismo significa "muitas formas". Ele permite que um mesmo método se comporte de maneiras diferentes dependendo do objeto que o chama.
+
+
