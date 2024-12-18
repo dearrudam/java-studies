@@ -11,6 +11,7 @@
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
   <modules>
+    <module>java-articles</module>
     <module>java-studies-oop</module>
   </modules>
 
@@ -26,6 +27,13 @@
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>5.11.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-bom</artifactId>
+        <version>3.26.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

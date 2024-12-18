@@ -1,0 +1,17 @@
+@startuml
+
+object "java.lang.Object" as object
+object "java.lang.String" as string
+object "mypackage.MyClass" as myclass
+
+note "Every class has Object as a superclass" as note2
+
+note top of object : Object is the root of the class hierarchy.
+
+myclass .. note2
+string .. note2
+
+object <|-- string
+object <|-- myclass
+
+@enduml

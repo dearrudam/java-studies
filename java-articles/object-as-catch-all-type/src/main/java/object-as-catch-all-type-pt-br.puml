@@ -1,0 +1,17 @@
+@startuml
+
+object "java.lang.Object" as object
+object "java.lang.String" as string
+object "mypackage.MyClass" as myclass
+
+note "Toda classe Java tem java.lang.Object como super classe" as note2
+
+note top of object : java.lang.Object é a raiz da hierarquia de classes no Java.
+
+myclass .. note2
+string .. note2
+
+object <|-- string
+object <|-- myclass
+
+@enduml
