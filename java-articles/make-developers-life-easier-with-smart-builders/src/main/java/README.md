@@ -272,7 +272,7 @@ The easiest way to make the `Notification` objects thread-safe is to make the ge
 
 All of these concerns are needed just because this class that instantiate mutable objects. If your scenario requires mutable objects then it makes sense to put effort to deal with all of these concerns. Otherwise, if your scenario allows you to use immutable objects, then you can avoid all of these concerns.
 
-That's the reason why I think that you must get clarity about the requirements of your solution before start coding. It will help you to choose the best approach to solve the problem. Let's come back to our `Notification` class and try to make it immutable.
+That's the reason why we must get clarity about the requirements of your solution before start coding. It will help you to choose the best approach to solve the problem. Let's come back to our `Notification` class and try to make it immutable.
 
 Immutable objects are thread-safe by nature because they cannot be modified after creation. It's a good practice to make your objects immutable whenever possible.
 
