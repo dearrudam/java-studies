@@ -270,7 +270,7 @@ The easiest way to make the `Notification` objects thread-safe is to make the ge
 - **It's not clear**: the developer must read the documentation to know which attributes are mandatory and which are not.
 - **It's not efficient**: synchronizing access to read and write data can cause performance issues in multithreaded applications.
 
-All of these concerns are needed just because a class that instantiate mutable objects. If your scenario requires mutable objects then it makes sense to put effort to deal with all of these concerns. Otherwise, if your scenario allows you to use immutable objects, then you can avoid all of these concerns.
+All of these concerns are needed just because this class that instantiate mutable objects. If your scenario requires mutable objects then it makes sense to put effort to deal with all of these concerns. Otherwise, if your scenario allows you to use immutable objects, then you can avoid all of these concerns.
 
 That's the reason why I think that you must get clarity about the requirements of your solution before start coding. It will help you to choose the best approach to solve the problem. Let's come back to our `Notification` class and try to make it immutable.
 
