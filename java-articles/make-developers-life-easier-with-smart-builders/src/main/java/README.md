@@ -391,7 +391,7 @@ We can solve this issue by using a traditional approach that it's called **Teles
 
 ### The traditional approach: Telescoping constructors
 
-A common approach to object creation is to provide multiple constructors with different numbers of parameters. Each constructor calls another constructor with the required parameters and sets the optional parameters to default values. It's called **telescoping constructors**. You can use this approach on any java class, including Java Records.
+A common approach to object creation is to provide multiple constructors with different numbers of parameters. Each constructor calls application constructor with the required parameters and sets the optional parameters to default values. It's called **telescoping constructors**. You can use this approach on any java class, including Java Records.
 
 Let's try to follow this approach. Let's see them.
 
@@ -457,24 +457,31 @@ Great! Let's review the issues we had and how we solved them:
 
 Well, the third one about the verbosity and error-prone of the constructors is still there yet. The fourth issue item, about the documentation, can help developers to know which constructor should be used with its argument ordering, but we can do more to make it easier.
 
-### Favor Static Factories Methods over Class Constructors
+### Favor Static Factory Methods over Class Constructors
 
-To help developers to know which constructor should be used, we can use static method factories to create objects. Static method factories are static methods that return an instance of a given class or its subtype. They can have names that describe the object being returned, making it easier for developers to know which constructor should be used.
+To help developers to know which constructor should be used, we can use static method factories to create objects. 
 
-Some advantages of using static method factories are:
+Static factory methods are static methods that return an instance of a given class or its subtype. They can have names that describe the object being returned, making it easier for developers to know which constructor should be used.
 
-- **Static method factories have names that describe the object being returned**: the developer can know which constructor should be used by reading the method name;
-- **Static method factories don't need to create a new object on even invocation**: it can return the same object if the object is immutable saving memory and CPU resources;
-- **Static method factories can return any object of subtype from the own return type**: it can return a subtype of the class, making it easier to create objects with different configurations;
+Maybe, you have been listened about the "Factory Method" pattern of the book Design Pattern (Gang of Four) before, but the Static Factory Method is not an implementation of this pattern directly. They purpose can be the same, but there is no equivalent pattern in the Gang of Four book to the Static Factory Methods, actually.
 
-Before to put our finger in the code, let's think about how to apply the static method factories on our challenge. According to the static method factory concept we can create a static method factory for each combination of attributes. It even will make the developer's life easier, but how do we should implement these static method factories?
+Some advantages of using static factory methods are:
 
-In fact, for our challenge, if we concentrate to provide static method factories for all possible combinations, it would be resulting in a big class with many static method factories. It's about 16 variations of static method factories! Maybe it would be not a good idea to have many static factories methods in a class. Maybe it makes the class harder to maintain and understand. Let's change our point of view: instead of cover statically all possible combinations, we can provide static method factories with the attributes that would be composing possible combinations. Let's see them.
+- **Static factory methods have names that describe the object being returned**: the developer can know which constructor should be used by reading the method name;
+- **Static factory methods don't need to create a new object on even invocation**: it can return the same object if the object is immutable saving memory and CPU resources;
+- **Static factory methods can return any object of subtype from the own return type**: it can return a subtype of the class, making it easier to create objects with different configurations;
+- **Static factory methods can return different objects depending on the provided input arguments**: different of constructors only return the instance of the class, creating a new instance every time they're called, the static factory methods can apply specifics logics and return objects of the type requested or its subtypes.
+
+
+Before to put our finger in the code, let's think about how to apply the static factory methods on our challenge. According to the static method factory concept we can create a static method factory for each combination of attributes. It even will make the developer's life easier, but how do we should implement these static factory methods?
+
+In fact, for our challenge, if we concentrate to provide static factory methods for all possible combinations, it would be resulting in a big class with many static factory methods. It's about 16 variations of static factory methods! Maybe it would be not a good idea to have many static factories methods in a class. Maybe it makes the class harder to maintain and understand. Let's change our point of view: instead of cover statically all possible combinations, we can provide static factory methods with the attributes that would be composing possible combinations. Let's see them.
 
 ```java
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
+@lombok.Builder
 public record Notification(
         String title,
         String message,
@@ -512,7 +519,7 @@ public record Notification(
     
 }
 ```
-Now, developers can create `Notification` objects using static method factories. The static method factories have names that describe the object being returned, making it easier for developers to know which constructor should be used. The `Notification` objects are immutable and thread-safe.
+Now, developers can create `Notification` objects using static factory methods. The static factory methods have names that describe the object being returned, making it easier for developers to know which constructor should be used. The `Notification` objects are immutable and thread-safe.
 
 Let's update the `NotificationProgram` that creates a `Notification` object:
 
@@ -540,23 +547,547 @@ public class NotificationProgram {
 
 Great! We're improving our code step by step. Maybe it's even good shape for some cases already, but I'm sure that we can do better!
 
-In our implementation, each static method factory is requiring four arguments. It's not a big deal, but what if we have more attributes? The static method factories will become even more complex and error-prone. Let's try to address this issue. 
+In our implementation, each static method factory is requiring four arguments. It's not a big deal, but what if we have more attributes? The static factory methods will become even more complex and error-prone. Let's try to address this issue. 
 
 ### Many parameters? Use the Builder pattern
 
+The Builder pattern is a creational design pattern that allows you to construct complex objects step by step. It's useful when you have many optional attributes in your class and you want to make the object creation more readable and maintainable.
+
+Some libraries like Lombok, or plugins of IDEs like IntelliJ IDEA, can generate the Builder pattern for you. That's amazing, but we need to understand how it works to be able to use it effectively.
+
+Let's see how we can implement the Builder pattern for our `Notification` class using Lombok for example:
+
+```java
+import lombok.Builder;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+@Builder
+public record Notification(
+        String title,
+        String message,
+        String recipient,
+        boolean highPriority,
+        Type type,
+        String attachment) {
+
+    public static enum Type {
+        GENERAL, INFO, WARNING, ERROR;
+    }
+
+    public Notification {
+        requireNonNull(title, "title is required");
+        requireNonNull(message, "message is required");
+        requireNonNull(recipient, "recipient is required");
+        type = ofNullable(type).orElse(Type.GENERAL);
+    }
+}
+```
+
+Behind of scenes, Lombok will generate to you all the builder class for the `Notification` class. At the end, we will have a similar result like below:
+
+```java
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+public record Notification(
+        String title,
+        String message,
+        String recipient,
+        boolean highPriority,
+        Type type,
+        String attachment) {
+
+    public static NotificationDataBuilder builder() {
+        return new NotificationDataBuilder();
+    }
+
+    public static enum Type {
+        GENERAL, INFO, WARNING, ERROR;
+    }
+
+    public Notification {
+        requireNonNull(title, "title is required");
+        requireNonNull(message, "message is required");
+        requireNonNull(recipient, "recipient is required");
+        type = ofNullable(type).orElse(Type.GENERAL);
+    }
+
+    public static class NotificationBuilder {
+        private String title;
+        private String message;
+        private String recipient;
+        private boolean highPriority;
+        private Type type;
+        private String attachment;
+
+        NotificationBuilder() {
+        }
+
+        public NotificationDataBuilder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public NotificationDataBuilder message(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public NotificationDataBuilder recipient(String recipient) {
+            this.recipient = recipient;
+            return this;
+        }
+
+        public NotificationDataBuilder highPriority(boolean highPriority) {
+            this.highPriority = highPriority;
+            return this;
+        }
+
+        public NotificationDataBuilder type(Type type) {
+            this.type = type;
+            return this;
+        }
+
+        public NotificationDataBuilder attachment(String attachment) {
+            this.attachment = attachment;
+            return this;
+        }
+
+        public Notification build() {
+            return new Notification(title, message, recipient, highPriority, type, attachment);
+        }
+    }
+}
+```
+
+And the `NotificationProgram` that creates a `Notification` object using the Builder pattern:
+
+```java
+
+```
+
+Lombok provides many annotations to generate boilerplate code for you. The `@Builder` annotation generates a builder class for the annotated class. The builder class has methods to set the attributes of the annotated class and a `build()` method to create an instance of the annotated class. 
+
+Particularly I prefer to have these classes explicitly in my code. It helps me to understand how the Builder pattern works and, the most important in my opinion: it free the developers to have Lombok configured on its IDEs. One less dependency to worry about!
+
+Let's see the flexibility that the Builder pattern provides to developers:
+
+```java
+public class NotificationProgram {
+    public static void main(String[] args) {
+        var generalNotification = Notification.builder()
+                .title("Hello")
+                .message("Hello World")
+                .recipient("johndoe@system.com")
+                .build();
+
+        // do something with generalNotification
+
+        var highPriorityInfoNotificationWithAttachment = Notification.builder()
+                .title("Hello")
+                .message("Hello World")
+                .recipient("johndoe@system.com")
+                .type(Type.INFO)
+                .highPriority(true)
+                .attachment("attachment.pdf")
+                .build();
+        
+        // do something with highPriorityInfoNotificationWithAttachment;
+    }
+}
+```
+Now, developers can create `Notification` objects using the Builder pattern. The Builder pattern allows developers to construct complex objects step by step, making the object creation more readable and maintainable. 
+
+Well, such builder like that may even help some developers to get their life easier, it means, the developers whose are creating the builder actually, but what about the developers whose will go to use the builder?
+
+What do you mean with that? - you may get to ask. It's a great question!
+
+Before to add the builder solution in the `Notification` class, developers whose are using our class must pass the required arguments to the static factories methods to create `Notification` objects. The Java compiler will enforce the developer to pass the mandatory and required arguments to the static factory methods to create `Notification` objects with valid state. Our builder solution doesn't provide this capability. Look the code below:
+
+```java
+public class NotificationProgram {
+    public static void main(String[] args) {
+        var anotherNotification = Notification.builder()
+                .recipient("johndoe@system.com")
+                .build();
+    }
+}
+```
+
+You may say: "It is not a big problem! The class will respect their constraints and no invalid instance will be created! It will throw exceptions to the caller!". Well, it's true but such exceptions will be thrown in runtime only. It's not a good for anyone! 
+
+Runtime exceptions explode in production and affect the image and perception of the final customer of the solution. It'll require a smart way to handle these scenarios and it would force developers to spread error handling logic on each point that it's using that code. It's not a good practice!
+
+In summary, compilation or runtime errors still showing that there are issues in the solution, but compilation errors help developers to discover issues in compile time, which is better! Let's try to use the Builder pattern to enforce the constraints of the `Notification` class in compile time.
+
 ### Restricts the order of method calls in the Builder pattern
+
+The Builder pattern allows developers to construct complex objects step by step. The Builder pattern can be used to enforce the constraints of the class in compile time.
+
+Our Builder implementation doesn't restrict the order of method calls. The developer can call the methods in any order, which can lead to invalid objects. It happens because the `NotificationBuilder` expose all the attributes to be set by the developer. We can restrict the order of method calls by using the **Step Builder pattern**.
+
+First, let's break down the `NotificationBuilder` in multiple steps. Each step will be responsible for setting a specific group of attributes. Here is our plan:
+
+* Let's ensure that `title`, `message`, and `recipient` are set in this specific order; Sometimes it's important to follow a predefined order during an object instantiation. That's not our case by the way. However, for learning purposes, let's do it on this way. Once these mandatory attributes are set, let's allow developer be able to build the `Notification` object with the default values for the optional attributes, or...
+* Let's allow developers to set `highPriority`, `type` and `attachment` in any order. As these attributes are optional we must allow developers be able to build the `Notification` object any time at this point;
+
+Let's see them:
+
+```java
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+public record Notification(
+        String title,
+        String message,
+        String recipient,
+        boolean highPriority,
+        Type type,
+        String attachment) {
+
+    public static enum Type {
+        GENERAL, INFO, WARNING, ERROR;
+    }
+
+    public Notification(String title, String message, String recipient) {
+        this(title, message, recipient, false, null, null);
+    }
+
+    public Notification {
+        requireNonNull(title, "title is required");
+        requireNonNull(message, "message is required");
+        requireNonNull(recipient, "recipient is required");
+        type = ofNullable(type).orElse(Type.GENERAL);
+    }
+
+    public static NotificationBuilder builder() {
+        return new NotificationBuilder();
+    }
+
+    public static final class NotificationBuilder {
+
+        public NotificationBuilderWithTitle title(String title) {
+            return new NotificationBuilderWithTitle(title);
+        }
+
+    }
+
+    public record NotificationBuilderWithTitle(String title) {
+
+        public NotificationBuilderWithTitleMessage message(String message) {
+            return new NotificationBuilderWithTitleMessage(this.title, message);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessage(String title, String message) {
+
+        public NotificationBuilderWithTitleMessageRecipient recipient(String recipient) {
+            return new NotificationBuilderWithTitleMessageRecipient(this.title, this.message, recipient);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessageRecipient(String title,
+                                                               String message,
+                                                               String recipient) {
+
+        public Notification build() {
+            return new Notification(title, message, recipient);
+        }
+    }
+    
+    public static final class NotificationBuilder {
+
+        public NotificationBuilderWithTitle title(String title) {
+            return new NotificationBuilderWithTitle(title);
+        }
+
+    }
+
+    public record NotificationBuilderWithTitle(String title) {
+
+        public NotificationBuilderWithTitleMessage message(String message) {
+            return new NotificationBuilderWithTitleMessage(this.title, message);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessage(String title, String message) {
+
+        public NotificationBuilderWithTitleMessageRecipient recipient(String recipient) {
+            return new NotificationBuilderWithTitleMessageRecipient(this.title, this.message, recipient);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessageRecipient(String title,
+                                                               String message,
+                                                               String recipient) {
+
+        public Notification build() {
+            return new Notification(title, message, recipient);
+        }
+    }
+}
+```
+
+Now, developers must follow the order of method calls to create a `Notification` object. The `NotificationBuilderWithTitle` class is responsible for setting the `title` attribute. The `NotificationBuilderWithTitleMessage` class is responsible for setting the `message` attribute. The `NotificationBuilderWithTitleMessageRecipient` class is responsible for setting the `recipient` attribute. The `NotificationBuilderWithTitleMessageRecipient` class has a `build()` method to create a `Notification` object. Let's highlight some points:
+
+1. **All the objects created by the building process are thread-safe**, which means, developers can create `Notification` objects in a multithreaded environment without any issues;
+2. **The methods provided by the builder objects are named**, which means, developers can know which method should be called next to create a `Notification` object;
+3. **The order of method calls is enforced by the builder pattern**, which means, developers must follow the order of method calls to create a `Notification` object and the compiler will enforce this constraint;
+4. **This builder provides a fluent API**, which means, developers can create `Notification` objects in a readable and maintainable way.
+
+Great! Let's continue to implement the optional attributes. Let's see them:
+
+```java
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+public record Notification(
+        String title,
+        String message,
+        String recipient,
+        boolean highPriority,
+        Type type,
+        String attachment) {
+
+    public static enum Type {
+        GENERAL, INFO, WARNING, ERROR;
+    }
+
+    public Notification(String title, String message, String recipient) {
+        this(title, message, recipient, false, null, null);
+    }
+
+    public Notification {
+        requireNonNull(title, "title is required");
+        requireNonNull(message, "message is required");
+        requireNonNull(recipient, "recipient is required");
+        type = ofNullable(type).orElse(Type.GENERAL);
+    }
+
+    public static NotificationBuilder builder() {
+        return new NotificationBuilder();
+    }
+
+    public static final class NotificationBuilder {
+
+        public NotificationBuilderWithTitle title(String title) {
+            return new NotificationBuilderWithTitle(title);
+        }
+
+    }
+
+    public record NotificationBuilderWithTitle(String title) {
+
+        public NotificationBuilderWithTitleMessage message(String message) {
+            return new NotificationBuilderWithTitleMessage(this.title, message);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessage(String title, String message) {
+
+        public NotificationBuilderWithTitleMessageRecipient recipient(String recipient) {
+            return new NotificationBuilderWithTitleMessageRecipient(this.title, this.message, recipient);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessageRecipient(String title,
+                                                               String message,
+                                                               String recipient) {
+
+        public Notification build() {
+            return new Notification(title, message, recipient);
+        }
+    }
+    
+    public static final class NotificationBuilder {
+
+        public NotificationBuilderWithTitle title(String title) {
+            return new NotificationBuilderWithTitle(title);
+        }
+
+    }
+
+    public record NotificationBuilderWithTitle(String title) {
+
+        public NotificationBuilderWithTitleMessage message(String message) {
+            return new NotificationBuilderWithTitleMessage(this.title, message);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessage(String title, String message) {
+
+        public NotificationBuilderWithTitleMessageRecipient recipient(String recipient) {
+            return new NotificationBuilderWithTitleMessageRecipient(this.title, this.message, recipient);
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessageRecipient(String title,
+                                                               String message,
+                                                               String recipient) {
+
+        public Notification build() {
+            return new Notification(title, message, recipient);
+        }
+
+        public NotificationBuilderWithTitleMessageRecipientAndMore addMore() {
+            return new NotificationBuilderWithTitleMessageRecipientAndMore(
+                    this.title,
+                    this.message,
+                    this.recipient
+            );
+        }
+    }
+
+    public record NotificationBuilderWithTitleMessageRecipientAndMore(String title,
+                                                                      String message,
+                                                                      String recipient,
+                                                                      Type type,
+                                                                      boolean highPriority,
+                                                                      String attachment) {
+
+        public NotificationBuilderWithTitleMessageRecipientAndMore(String title, String message, String recipient) {
+            this(title, message, recipient, null, false, null);
+        }
+
+        public NotificationBuilderWithTitleMessageRecipientAndMore highPriority(boolean highPriority) {
+            return new NotificationBuilderWithTitleMessageRecipientAndMore(
+                    this.title,
+                    this.message,
+                    this.recipient,
+                    this.type,
+                    highPriority,
+                    this.attachment
+            );
+        }
+
+        public NotificationBuilderWithTitleMessageRecipientAndMore attachment(String attachment) {
+            return new NotificationBuilderWithTitleMessageRecipientAndMore(
+                    this.title,
+                    this.message,
+                    this.recipient,
+                    this.type,
+                    this.highPriority,
+                    attachment
+            );
+        }
+
+        public NotificationBuilderWithTitleMessageRecipientAndMore type(Type type) {
+            return new NotificationBuilderWithTitleMessageRecipientAndMore(
+                    this.title,
+                    this.message,
+                    this.recipient,
+                    type,
+                    this.highPriority,
+                    this.attachment
+            );
+        }
+
+        public Notification build() {
+            return new Notification(
+                    this.title,
+                    this.message,
+                    this.recipient,
+                    this.highPriority,
+                    this.type,
+                    this.attachment
+            );
+        }
+    }
+    
+}
+
+```
+
+Now, developer can create `Notification` objects defining the optional attributes in any order. The `NotificationBuilderWithTitleMessageRecipientAndMore` class is responsible for setting the optional attributes. Also, at this point, developers can set the optional attributes or call the `build()` method to create a `Notification` object arbitrarily. Let's highlight some points:
+
+1. **This builder allows developers to set the optional attributes in any order**, which means, developers can create `Notification` objects with the optional attributes in any order;
+
+2. **The builder allows developers to create `Notification` objects arbitrarily**, which means, developers can set the optional attributes or create the `Notification` object at any point in the building process;
+
+Let's update the `NotificationProgram` that creates a `Notification` object using the Builder pattern:
+
+```java
+import notification.Notification;
+
+public class NotificationProgram {
+
+    public static void main(String[] args) {
+        var generalNotification = Notification.builder()
+                .title("Another title")
+                .message("Another message")
+                .recipient("johndoe@system.com")
+                .build();
+
+        // do something with generalNotification
+
+        var highPriorityWarningNotification = Notification.builder()
+                .title("Warning title")
+                .message("Attention people!")
+                .recipient("johndoe@sytem.com")
+                .addMore()
+                .highPriority(true)
+                .type(Notification.Type.WARNING)
+                .build();
+
+        // do something with highPriorityWarningNotification
+
+        var highPriorityErrorNotificationWithAttachment = Notification.builder()
+                .title("Warning title")
+                .message("Attention people!")
+                .recipient("johndoe@sytem.com")
+                .addMore()
+                .type(Notification.Type.ERROR)
+                .attachment("error.log")
+                .highPriority(true)
+                .build();
+
+        // do something with highPriorityErrorNotificationWithAttachment
+    }
+
+}
+```
+
+This builder implementation go beyond the traditional Builder pattern.
+As we can see, in the previous code, developers can create `Notification` objects with the optional attributes in any order and, at the same time, it enforces the constraints of the `Notification` class in compile time, making the object creation more readable and maintainable. 
+
+As Ben Parker used to say - "With great powers come great responsibilities" - be implementing the Builder pattern on that way will make the code complex, making it harder to understand and change, probably. It's a trade-off that you must consider when using the Builder pattern.
+
+Once you have to deal with many attributes to create objects, the Builder pattern can be a good choice to create objects with many optional attributes. As the builder is getting help from the compiler, refactoring the code will be easier and safer.
 
 ### Conclusion
 
+In this content, we discussed some approaches to create objects with many optional attributes. We started with the traditional approach, using constructors and setters to create objects. We saw that this approach can lead to invalid objects, thread-safety issues, and verbose code. We solved these issues by using the Builder pattern.
+
+All of the approaches have their pros and cons. The telescoping constructors approach can solve some scenarios, but it may be error-prone and verbose when dealing with many attributes. The Static Method Factory can offer a good alternative to build objects when few attributes are required. The Builder pattern allows developers to construct complex objects step by step, making the object creation more readable and maintainable. The Step Builder pattern can be used to enforce the constraints of the class in compile time. In the end, we were able to see how these approaches can help developers to get their life easier when creating objects with many optional attributes.
+
 ### Key Takeaways
+
+- Make the lives of developers easier it's so important as make the lives of the final customers easier;
+- The telescoping constructors approach can solve some scenarios, but it may be error-prone and verbose when dealing with many attributes;
+- The Static Method Factory can offer a good alternative to build objects when few attributes are required;
+- The Builder pattern allows developers to construct complex objects step by step, making the object creation more readable and maintainable;
+- The Step Builder pattern can be used to enforce the constraints of the class in compile time;
 
 ### Final Thoughts
 
-### Next steps
+I hope you enjoyed this content! If you have any questions or feedback, please feel free to reach out. I'd love to hear from you!
 
-Congratulations on reaching the end of this content! I hope you found it informative and helpful.
+Many Java open-source projects brings these approaches to create objects with many optional attributes. Lombok, for example, provides the `@Builder` annotation to generate the Builder pattern for you, but it's important to understand how it works to be able to use it effectively.
 
-The learned concepts in this content are essential for understanding the motivation behind using generics in Java. Generics are a powerful feature that allows you to write more flexible, type-safe code by providing compile-time type checking. 
+To see a good example for these technics in action take a look at the Eclipse JNoSQL project, at [org.eclipse.jnosql.mapping.semistructured.AbstractSemiStructuredTemplate](https://github.com/eclipse-jnosql/jnosql/blob/ecf992ba9bb6aaf2f816e9e21802258c2037736c/jnosql-mapping/jnosql-mapping-semistructured/src/main/java/org/eclipse/jnosql/mapping/semistructured/AbstractSemiStructuredTemplate.java#L295) class on the `QueryMapper.MapperFrom select(Class<T> type)` method. It uses the Builder pattern to create complex `SelectQuery` objects that will be used to perform queries to retrieve data from semi-structured database implementations.
+
+If you want to learn more about the Builder pattern, I recommend the following resources:
+
+- [Effective Java - Item 2: Consider a builder when faced with many constructor parameters](https://www.amazon.com/Effective-Java-3rd-Joshua-Bloch/dp/0134685997)
+
+- [Design Patterns: Elements of Reusable Object-Oriented Software](https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612)
+
+- [Builder Pattern - Refactoring Guru](https://refactoring.guru/design-patterns/builder)
+
+- [Builder Pattern - Wikipedia](https://en.wikipedia.org/wiki/Builder_pattern)
+
+Also, I'd like to recommend you put these approaches in practices day-by-day. It will help you to understand when to use each one and how to apply them effectively. Resources li
 
 Did you like this content? If so, please share it with your friends and colleagues. Also, don't forget to follow me on social media to stay up to date with the latest content and updates.
 

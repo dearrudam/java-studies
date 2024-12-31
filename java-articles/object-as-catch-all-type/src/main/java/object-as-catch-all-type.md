@@ -68,7 +68,7 @@ Yeah, there is no "silver bullet" in the software development area. Every decisi
 
 Regardless of the type of object, you can only interact with it through its **interface**. In this context the "interface" word means the exposed methods declared on its class.
 
-A **class** is a blueprint for an object. When you define a class, you're specifying its type, the structure and behavior of the objects created from it. The class defines the attributes (data) and methods (behavior) that the objects will have. These methods allow objects to interact with one another.
+A **class** is a blueprint for an object. When you define a class, you're specifying its type, the structure and behavior of the objects created from it. The class defines the attributes (data) and methods (behavior) that the objects will have. These methods allow objects to interact with one application.
 
 The `Object` class includes some common methods, such as `toString()`, `equals()`, and `hashCode()`. These methods are useful in many cases, but they are not sufficient when you want to interact with specific methods of a particular class.
 
@@ -96,11 +96,11 @@ ObjectAsCatchAllTypeProgram.java:5: error: cannot find symbol
 error: compilation failed
 ```
 
-When you declare a variable as `Object`, you lose type safety. Type safety is a feature of Java that prevents you from assigning an object of one type to a variable of another type. This feature helps catch errors at compile time, making your code more reliable. In the example above, the compiler doesn't know that `infoA` is a `String` object, so it doesn't allow you to call the `length()` method on it by raising a **compilation error**.
+When you declare a variable as `Object`, you lose type safety. Type safety is a feature of Java that prevents you from assigning an object of one type to a variable of application type. This feature helps catch errors at compile time, making your code more reliable. In the example above, the compiler doesn't know that `infoA` is a `String` object, so it doesn't allow you to call the `length()` method on it by raising a **compilation error**.
 
 ### Limitations of Using Object: The need for explicit casting
 
-To interact with an object as its specific type, you need to cast it to that type. Casting is the process of converting an object from one type to another. In Java, you can cast an object to a subclass or superclass type. Let’s cast `infoA` to `String` before calling the `length()` method to fix the **compilation failed** showed before:
+To interact with an object as its specific type, you need to cast it to that type. Casting is the process of converting an object from one type to application. In Java, you can cast an object to a subclass or superclass type. Let’s cast `infoA` to `String` before calling the `length()` method to fix the **compilation failed** showed before:
 
 ```java
 class ObjectAsCatchAllTypeProgram {
@@ -145,7 +145,7 @@ Exception in thread "main" java.lang.ClassCastException: class java.lang.Integer
 
 A **ClassCastException** is thrown because we're trying to cast an `Integer` object to a `String` object. `Integer` is not a subclass of `String`, so the cast fails. This is a **runtime error**.
 
-Let’s explore another case:
+Let’s explore application case:
 
 ```java
 class ObjectAsCatchAllTypeProgram {
