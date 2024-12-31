@@ -15,5 +15,6 @@
 
     <modules>
         <module>object-as-catch-all-type</module>
+        <module>make-developers-life-easier-with-smart-builders</module>
     </modules>
 </project>
