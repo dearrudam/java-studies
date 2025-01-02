@@ -162,7 +162,7 @@ Let's try to address the issues above.
 
 1. **`Notification` objects can be instantiated with invalid state**: it violates the constraints of our challenge.
 
-Okay, you would say: "It's not a big deal! We can use the constructor to set the mandatory attributes and the setters to set the optional attributes". Let's try to follow this argument:
+Okay, you would say: "_It's not a big deal! We can use the constructor to set the mandatory attributes and the setters to set the optional attributes_". Let's try to follow this argument:
 
 ```java
 import static java.util.Optional.ofNullable;
@@ -661,13 +661,11 @@ public record Notification(
 }
 ```
 
-And the `NotificationProgram` that creates a `Notification` object using the Builder pattern:
+Lombok provides many annotations to generate boilerplate code for you. The `@Builder` annotation generates a builder class for the annotated class. The generated builder class by Lombok has a fluent interface where developers can call in chaining way the methods to set the attributes of the annotated class and a `build()` method to create an instance of the annotated class. 
 
-```java
+Builders can be implemented in many ways, like using the traditional setter style, but it's commonly implemented following the **Fluent API** design style.
 
-```
-
-Lombok provides many annotations to generate boilerplate code for you. The `@Builder` annotation generates a builder class for the annotated class. The builder class has methods to set the attributes of the annotated class and a `build()` method to create an instance of the annotated class. 
+The **Fluent API** is a design style is enfatize by the method chaining. It allows developers to call methods in a chaining way, making the code more readable and maintainable. It's used in many libraries, frameworks and APIs to improve the developer experience. It can be applied to the Builder pattern for sure, but it's not limited to this use. It can be used in **DSLs (Domain-Specific Languages)** and many other contexts.
 
 Particularly I prefer to have these classes explicitly in my code. It helps me to understand how the Builder pattern works and, the most important in my opinion: it free the developers to have Lombok configured on its IDEs. One less dependency to worry about!
 
@@ -697,7 +695,7 @@ public class NotificationProgram {
     }
 }
 ```
-Now, developers can create `Notification` objects using the Builder pattern. The Builder pattern allows developers to construct complex objects step by step, making the object creation more readable and maintainable. 
+Now, developers can create `Notification` objects using the Builder pattern. The Builder pattern allows developers to construct complex objects step by step, making the object creation more readable and maintainable.
 
 Well, such builder like that may even help some developers to get their life easier, it means, the developers whose are creating the builder actually, but what about the developers whose will go to use the builder?
 
@@ -715,7 +713,7 @@ public class NotificationProgram {
 }
 ```
 
-You may say: "It is not a big problem! The class will respect their constraints and no invalid instance will be created! It will throw exceptions to the caller!". Well, it's true but such exceptions will be thrown in runtime only. It's not a good for anyone! 
+You may say: "_It is not a big problem! The class will respect their constraints and no invalid instance will be created! It will throw exceptions to the caller!_". Well, it's true but such exceptions will be thrown in runtime only. It's not a good for anyone! 
 
 Runtime exceptions explode in production and affect the image and perception of the final customer of the solution. It'll require a smart way to handle these scenarios and it would force developers to spread error handling logic on each point that it's using that code. It's not a good practice!
 
@@ -1057,17 +1055,24 @@ Once you have to deal with many attributes to create objects, the Builder patter
 
 ### Conclusion
 
-In this content, we discussed some approaches to create objects with many optional attributes. We started with the traditional approach, using constructors and setters to create objects. We saw that this approach can lead to invalid objects, thread-safety issues, and verbose code. We solved these issues by using the Builder pattern.
+In this content, we discussed some approaches to create objects with many optional attributes. We started with the traditional approach, using constructors and setters to create objects. We saw that this approach can lead to invalid objects, thread-safety issues, and verbose code. We then explored some approaches like: 
 
-All of the approaches have their pros and cons. The telescoping constructors approach can solve some scenarios, but it may be error-prone and verbose when dealing with many attributes. The Static Method Factory can offer a good alternative to build objects when few attributes are required. The Builder pattern allows developers to construct complex objects step by step, making the object creation more readable and maintainable. The Step Builder pattern can be used to enforce the constraints of the class in compile time. In the end, we were able to see how these approaches can help developers to get their life easier when creating objects with many optional attributes.
+* Telescope constructors;
+* Static Method Factory;
+* Builder pattern;
+* Fluent API design style;
+* Step Builder pattern.
+
+All the approaches have their pros and cons. The telescoping constructors approach can solve some scenarios, but it may be error-prone and verbose when dealing with many attributes. The Static Method Factory can offer a good alternative to build objects when few attributes are required. The Builder pattern allows developers to construct complex objects step by step using the Fluent API design style providing a fluent interface, making the object creation more readable and maintainable and, the Step Builder pattern can be used to enforce the constraints of the class in compile time. In the end, we were able to see how these approaches can help developers to get their life easier when creating objects with many attributes.
 
 ### Key Takeaways
 
 - Make the lives of developers easier it's so important as make the lives of the final customers easier;
-- The telescoping constructors approach can solve some scenarios, but it may be error-prone and verbose when dealing with many attributes;
-- The Static Method Factory can offer a good alternative to build objects when few attributes are required;
-- The Builder pattern allows developers to construct complex objects step by step, making the object creation more readable and maintainable;
-- The Step Builder pattern can be used to enforce the constraints of the class in compile time;
+- The **Telescoping Constructors** approach can solve some scenarios, but it may be error-prone and verbose when dealing with many attributes;
+- The **Static Method Factory** can offer a good alternative to build objects when few attributes are required;
+- The **Builder pattern** allows developers to construct complex objects;
+- The **Fluent API** design style can help developers to create specialized code focused in method chaining improving the developer experience. It's normally used to express domain-specific languages. In our context, it was used to create a builder easier to use, allowing developers to create objects in a readable and maintainable way;
+- The **Step Builder pattern** is variation of the Builder pattern. As a Builder's variant, it allows developers to create complex objects by setting the attributes following a predefined order;
 
 ### Final Thoughts
 
@@ -1075,9 +1080,15 @@ I hope you enjoyed this content! If you have any questions or feedback, please f
 
 Many Java open-source projects brings these approaches to create objects with many optional attributes. Lombok, for example, provides the `@Builder` annotation to generate the Builder pattern for you, but it's important to understand how it works to be able to use it effectively.
 
-To see a good example for these technics in action take a look at the Eclipse JNoSQL project, at [org.eclipse.jnosql.mapping.semistructured.AbstractSemiStructuredTemplate](https://github.com/eclipse-jnosql/jnosql/blob/ecf992ba9bb6aaf2f816e9e21802258c2037736c/jnosql-mapping/jnosql-mapping-semistructured/src/main/java/org/eclipse/jnosql/mapping/semistructured/AbstractSemiStructuredTemplate.java#L295) class on the `QueryMapper.MapperFrom select(Class<T> type)` method. It uses the Builder pattern to create complex `SelectQuery` objects that will be used to perform queries to retrieve data from semi-structured database implementations.
+The design patterns and code styles can be mixed and matched as needed to solve the problem at hand. **There is no silver bullet in software development**. Each approach has its pros and cons and nobody is better than you to know which one is the best for your scenario. 
+
+To see a good example that use some of these technics in action take a look at the Eclipse JNoSQL project, at [org.eclipse.jnosql.mapping.semistructured.AbstractSemiStructuredTemplate](https://github.com/eclipse-jnosql/jnosql/blob/ecf992ba9bb6aaf2f816e9e21802258c2037736c/jnosql-mapping/jnosql-mapping-semistructured/src/main/java/org/eclipse/jnosql/mapping/semistructured/AbstractSemiStructuredTemplate.java#L295) class on the `QueryMapper.MapperFrom select(Class<T> type)` method. It uses a Fluent API design style to help users to perform queries to retrieve data from semi-structured database implementations.
 
 If you want to learn more about the Builder pattern, I recommend the following resources:
+
+- [Fluent-API: Creating Easier, More Intuitive Code With a Fluent API by Otavio Santana](https://dzone.com/articles/java-fluent-api)
+
+- [Effective Java - Item 1: Consider Static Factory Methods Instead Of Constructors](https://www.amazon.com/Effective-Java-3rd-Joshua-Bloch/dp/0134685997)
 
 - [Effective Java - Item 2: Consider a builder when faced with many constructor parameters](https://www.amazon.com/Effective-Java-3rd-Joshua-Bloch/dp/0134685997)
 
@@ -1087,7 +1098,7 @@ If you want to learn more about the Builder pattern, I recommend the following r
 
 - [Builder Pattern - Wikipedia](https://en.wikipedia.org/wiki/Builder_pattern)
 
-Also, I'd like to recommend you put these approaches in practices day-by-day. It will help you to understand when to use each one and how to apply them effectively. Resources li
+Also, I'd like to recommend you put these approaches in practices day-by-day. It will help you to understand when to use each one and how to apply them effectively. 
 
 Did you like this content? If so, please share it with your friends and colleagues. Also, don't forget to follow me on social media to stay up to date with the latest content and updates.
 
