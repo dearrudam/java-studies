@@ -257,7 +257,7 @@ Aparentemente resolvemos o primeiro problema, certo? Bem, vamos analisar o códi
 
 Com as mudanças os objetos `Notification` serão instanciados com referências não nulas para os atributos obrigatórios. Mas, ainda temos alguns problemas: **o construtor `Notification` com todos os atributos obrigatórios é propenso a erros!** Agora, os desenvolvedores podem definir os atributos na ordem errada. Por exemplo, o desenvolvedor pode definir o `recipient` antes do `title`, o que invalida o estado do objeto fazendo com que os campos contenham o valor errado. Tal problema só poderá ser detectado em um processo de depuração ou analisando a saída derivada desses objetos `Notification` inválidos.
 
-Talvez dois ou trés argumentos com o mesmo tipo não seja um grande problema, mas na perspectiva dos desenvolvedores que irão usar nossa classe, não é algo fácil de lidar, e se tivermos mais atributos? O construtor se tornará ainda mais complexo e propenso a erros.
+Talvez dois ou três argumentos com o mesmo tipo não seja um grande problema, mas na perspectiva dos desenvolvedores que irão usar nossa classe, não é algo fácil de lidar, e se tivermos mais atributos? O construtor se tornará ainda mais complexo e propenso a erros.
 
 Vamos continuar, mas agora tentando resolver o segundo problema:
 
