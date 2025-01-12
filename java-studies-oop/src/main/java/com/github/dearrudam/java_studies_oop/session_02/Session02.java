@@ -46,10 +46,19 @@ public class Session02 {
         // argumentos para métodos ou atribuídas a variáveis. Elas são usadas
         // para definir comportamentos que serão executados em um contexto específico.
         // Uma lambda Java é composta por três partes:
+        //
         // 1. Uma lista de parâmetros. Se não houver parâmetros, você deve usar
         //    parênteses vazios. Quando há apenas um atributo, você pode omitir
         //    os parênteses.
+        //    No java 22 é possível utilizar o carácter underscore ou underline (_) para indicar
+        //    que o parâmetro não será utilizado. exemplo:
+        //
+        //    Consumer<Veiculo, Integer> meuBiConsumer = (veiculo, _) -> System.out.println(veiculo.marca());
+        //
+        //    No exemplo acima, o segundo parâmetro não será utilizado.
+        //
         // 2. Uma seta (->)
+        //
         // 3. Um corpo. Este pode ser uma expressão ou um bloco de código.
         //    Quando a expressão pode ser resolvida em uma única linha, você pode
         //    omitir as chaves, mas quando o corpo da lambda é mais extenso, você
