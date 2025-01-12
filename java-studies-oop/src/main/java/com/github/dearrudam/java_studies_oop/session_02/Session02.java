@@ -155,7 +155,7 @@ public class Session02 {
         return marcaMatcher.e(anoMatcher);
     }
 
-    private static <G extends Veiculo> void listarMarca(
+    private static void listarMarca(
             List<? extends Veiculo> veiculos,
             Filtro<? super Veiculo> filtro,
             RegraDeNegocio<? super Veiculo> regraDeNegocio) {
