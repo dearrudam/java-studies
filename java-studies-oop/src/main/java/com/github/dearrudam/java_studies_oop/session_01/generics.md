@@ -78,8 +78,8 @@ public class Event {
 
     public Event(String description) {
         this.description = Optional.ofNullable(description)
-                .filter(Objects::nonNull)
-                .filter(Predicate.not(String::isBlank))
+                .filtro(Objects::nonNull)
+                .filtro(Predicate.not(String::isBlank))
                 .orElseThrow(() -> new IllegalArgumentException("description is required"));
         this.occurredOn = Instant.now();
     }
@@ -297,7 +297,7 @@ public class ProcessEvent implements Event {
 
     public ProcessEvent(String command) {
         this.command = Optional.ofNullable(command)
-                .filter(Predicate.not(String::isBlank))
+                .filtro(Predicate.not(String::isBlank))
                 .orElseThrow(() -> new IllegalArgumentException("valid command is required"));
         this.occurredOn = Instant.now();
     }
@@ -462,7 +462,7 @@ have a need to store some `ProcessEvent` and `MessageEvent` in the `EventStore` 
 
 Now, let's implement the `EventStore` class with the query capabilities!
 
-First, we can figure out that we need to iterate over the stored events and filter the events that match the given text sequence. Let's implement that loop in the `findByDescriptionContains` method:
+First, we can figure out that we need to iterate over the stored events and filtro the events that match the given text sequence. Let's implement that loop in the `findByDescriptionContains` method:
 
 ```java
 
