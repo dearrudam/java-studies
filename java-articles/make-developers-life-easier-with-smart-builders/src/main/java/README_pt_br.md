@@ -38,7 +38,7 @@ Temos aqui uma inicial definição para nossa classe `Notification`:
 
 ```java
 public class Notification {
-    
+
     private String title; // mandatory
     private String message; // mandatory
     private String recipient; // mandatory
@@ -49,7 +49,7 @@ public class Notification {
     public static enum Type {
         GENERAL, INFO, WARNING, ERROR
     }
-    
+
     // omitted getters
 }
 
@@ -120,7 +120,7 @@ public class Notification {
     public void setAttachment(String attachment) {
         this.attachment = attachment;
     }
-    
+
     public  Optional<String> getAttachment() {
         return attachment;
     }
@@ -133,7 +133,7 @@ Analisando o código acima, podemos ver que o desenvolvedor deve chamar os sette
 
 ```java
 public class NotificationProgram {
-    
+
     public static void main(String[] args) {
         Notification notification = new Notification();
         notification.setTitle("New message");
@@ -186,7 +186,7 @@ public class Notification {
         setMessage(message);
         setRecipient(recipient);
     }
-    
+
     public void setTitle(String title) {
         this.title = requireNonNull(title, "title is required");
     }
@@ -230,7 +230,7 @@ public class Notification {
     public void setAttachment(String attachment) {
         this.attachment = attachment;
     }
-    
+
     public  Optional<String> getAttachment() {
         return attachment;
     }
@@ -294,12 +294,12 @@ public class Notification {
     public static enum Type {
         GENERAL, INFO, WARNING, ERROR
     }
-    
-    public Notification(String title, 
-                        String message, 
-                        String recipient, 
-                        boolean highPriority, 
-                        Type type, 
+
+    public Notification(String title,
+                        String message,
+                        String recipient,
+                        boolean highPriority,
+                        Type type,
                         String attachment) {
         this.title = requireNonNull(title, "title is required");
         this.message = requireNonNull(message, "message is required");
@@ -316,11 +316,11 @@ public class Notification {
     public String getMessage() {
         return message;
     }
-    
+
     public String getRecipient() {
         return recipient;
     }
-    
+
     public boolean isHighPriority() {
         return highPriority;
     }
@@ -344,19 +344,17 @@ public class NotificationProgram {
 
     public static void main(String[] args) {
         Notification notification = new Notification(
-                "New message", 
-                "Hello, world!", 
-                "johndoe@system.com", 
-                true, 
-                Notification.Type.INFO, 
+                "New message",
+                "Hello, world!",
+                "johndoe@system.com",
+                true,
+                Notification.Type.INFO,
                 "/path/to/attachment.txt");
     }
 }
 ```
 
 Agora os objetos `Notification` são imutáveis e seguros para threads. O desenvolvedor pode instanciar o objeto com todos os atributos obrigatórios e opcionais em uma única linha de código. O objeto será criado em um estado válido, e o desenvolvedor não pode alterar seu estado após a criação.
-
-Since Java 16, we can use the `record` keyword to create immutable objects. If you're using Java 16 or above, I highly recommend you to use Java Records to create immutable objects. Let's see how we can refactor the `Notification` class to become a Java Record:
 
 Desde o Java 16, podemos usar a palavra-chave `record` para criar objetos imutáveis, é o que chamamos Java Records. Se você estiver usando o Java 16 ou superior, eu recomendo fortemente que você use Java Records para criar objetos imutáveis. Vamos ver como podemos refatorar a classe `Notification` para se tornar um Java Record:
 
@@ -705,8 +703,6 @@ public class NotificationProgram {
 
 Agora, desenvolvedores poderão criar objetos `Notification` usando o padrão Builder. O padrão Builder permite que os desenvolvedores construam objetos complexos passo a passo, tornando a criação do objeto mais legível e manutenível.
 
-Well, such builder like that may even help some developers to get their life easier, it means, the developers whose are creating the builder actually, but what about the developers whose will go to use the builder?
-
 Bom, tal builder como esses podem até ajudar facilitar a vida de alguns desenvolvedores, principalmente os desenvolvedores que estão criando o builder, mas e quanto aos desenvolvedores que irão usar o builder?
 
 Mas o que você quer dizer com isso? - você pode perguntar. É essa é uma ótima pergunta!
@@ -732,8 +728,6 @@ Em resumo, erros de compilação (compilation errors) ou de tempo de execução 
 ### Restringindo a ordem das chamadas de métodos no padrão Builder
 
 O padrão Builder permite que os desenvolvedores construam objetos complexos passo a passo. O padrão Builder pode ser usado para impor as restrições da classe em tempo de compilação.
-
-Our Builder implementation doesn't restrict the order of method calls. The developer can call the methods in any order, which can lead to invalid objects. It happens because the `NotificationBuilder` expose all the attributes to be set by the developer. We can restrict the order of method calls by using the **Step Builder pattern**.
 
 Nossa implementação do Builder não restringe a ordem das chamadas de métodos. O desenvolvedor pode chamar os métodos em qualquer ordem, o que pode levar a objetos inválidos. Isso acontece porque o `NotificationBuilder` expõe todos os atributos para serem definidos pelo desenvolvedor de maneira livre. Com isso, não conseguimos exigir que os métodos obrigatórios sejam chamados e assim garantir que os atributos obrigatórios tenham sido definidos. Para restringir essa ordem das chamadas de métodos, podemos estar utilizando uma variação do padrão Builder, o **padrão Step Builder**.
 
@@ -1059,13 +1053,11 @@ public class NotificationProgram {
 }
 ```
 
-Essa implementação do builder vai além do tradicional padrão Builder. 
+Essa implementação do builder vai além do tradicional padrão Builder.
 
 Como podemos ver no código anterior, os desenvolvedores podem criar objetos `Notification` com os atributos opcionais em qualquer ordem e, ao mesmo tempo, ele impõe as restrições da classe `Notification` em tempo de compilação forçando a definição dos atributos obrigatórios, tornando a criação do objeto mais legível e manutenível.
 
 Como o tio Ben Parker costumava dizer - "Com grandes poderes vêm grandes responsabilidades" - implementar o padrão Builder dessa forma tornará o código complexo, tornando-o mais difícil de entender e alterar, provavelmente. É um trade-off que você deve considerar ao usar o padrão Builder.
-
-Once you have to deal with many attributes to create objects, the Builder pattern can be a good choice to create objects with many optional attributes. As the builder is getting help from the compiler, refactoring the code will be easier and safer.
 
 Uma vez que você tenha que lidar com muitos atributos (sendo eles obrigatórios ou não) para criar objetos, o padrão Builder e suas variações podem ser uma boa escolha. Como o builder está recebendo ajuda do compilador, refatorar o código será mais fácil e seguro.
 
